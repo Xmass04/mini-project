@@ -2,3 +2,7 @@ fastapi
 uvicorn
 supabase
 python-dotenv
+sentence-transformers
+faiss-cpu
+scikit-learn
+numpy
