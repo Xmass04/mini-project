@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ApplyAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-wrap">
+      <div class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M9 12h6M9 16h6M9 8h3M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="18" cy="18" r="5" fill="#10b981" stroke="white" stroke-width="1.5"/>
+          <path d="M16 18l1.5 1.5L20 16.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="app-name">ApplyAI</h1>
+        <p class="app-tagline">Smart Job Filler</p>
+      </div>
+    </div>
+    <div class="status-pill" id="statusDot">
+      <span class="status-dot-inner"></span>
+      <span class="status-label" id="statusLabel">Idle</span>
+    </div>
+  </div>
+
+  <!-- Description Banner -->
+  <div class="description-banner">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" class="banner-icon">
+      <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <p>Upload your resume once — AI autofills applications and scores your fit for any role, instantly.</p>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+
+    <!-- Resume Upload -->
+    <div class="section-label">Resume</div>
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="resumeInput" accept=".pdf,.doc,.docx" hidden />
+      <div class="upload-icon-wrap">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+          <path d="M12 15V4M12 4L8.5 7.5M12 4l3.5 3.5" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p class="upload-main" id="uploadMain">Click or drag & drop your resume</p>
+      <p class="upload-sub">PDF, DOC, DOCX &nbsp;·&nbsp; max 5 MB</p>
+    </div>
+
+    <!-- Uploaded File Chip -->
+    <div class="file-chip" id="fileInfo" style="display:none;">
+      <div class="file-chip-icon">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8L14 2z" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+          <path d="M14 2v6h6" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="file-chip-name" id="fileName">resume.pdf</span>
+      <button class="remove-btn" id="removeBtn" title="Remove">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6L6 18M6 6l12 12" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Parse Status -->
+    <div class="parse-status" id="parseStatus" style="display:none;">
+      <div class="parse-spinner" id="parseSpinner"></div>
+      <span id="parseText">Parsing resume…</span>
+    </div>
+
+    <!-- Divider -->
+    <div class="divider"></div>
+
+    <!-- Actions -->
+    <div class="section-label">Actions</div>
+    <div class="actions">
+      <button class="btn btn-primary" id="autofillBtn" disabled>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3v1M12 20v1M4.22 4.22l.71.71M18.36 18.36l.71.71M3 12h1M20 12h1M4.22 19.78l.71-.71M18.36 5.64l.71-.71" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        Autofill Application
+      </button>
+      <button class="btn btn-outline" id="matchBtn" disabled>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zM15 9v10a2 2 0 002 2h2a2 2 0 002-2V9a2 2 0 00-2-2h-2a2 2 0 00-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M9 3h6v6H9z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Check Match Score
+      </button>
+    </div>
+
+    <!-- Match Score Card -->
+    <div class="match-card" id="matchResult" style="display:none;">
+      <div class="match-card-header">
+        <span class="match-label">Match Score</span>
+        <span class="score-badge" id="scoreBadge">0%</span>
+      </div>
+      <div class="score-track">
+        <div class="score-fill" id="scoreFill" style="width:0%"></div>
+      </div>
+      <div class="score-breakdown" id="scoreBreakdown"></div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="fillStatus" style="display:none;">
+      <div class="toast-icon" id="toastIcon">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+          <path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span id="fillText">Fields filled successfully!</span>
+    </div>
+
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

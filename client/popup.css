@@ -1,0 +1,411 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 360px;
+  font-family: 'Urbanist', sans-serif;
+  background: #060d1a;
+  color: #d1fae5;
+  font-size: 13px;
+}
+
+/* ── Header ─────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #071020 0%, #0a1628 100%);
+  border-bottom: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #065f46, #10b981);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+  flex-shrink: 0;
+}
+
+.app-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ecfdf5;
+  letter-spacing: -0.4px;
+  line-height: 1.1;
+}
+
+.app-tagline {
+  font-size: 10px;
+  color: #6ee7b7;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+/* Status pill */
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  border-radius: 99px;
+  padding: 4px 10px 4px 7px;
+}
+
+.status-dot-inner {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #1e3a2f;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.status-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #2d5c47;
+  letter-spacing: 0.3px;
+  transition: color 0.3s;
+}
+
+.status-pill.active .status-dot-inner {
+  background: #10b981;
+  box-shadow: 0 0 7px rgba(16, 185, 129, 0.7);
+}
+
+.status-pill.active .status-label {
+  color: #6ee7b7;
+}
+
+/* ── Description Banner ──────────────────────────────── */
+.description-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, rgba(16,185,129,0.07), rgba(6,95,70,0.04));
+  border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+}
+
+.banner-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.description-banner p {
+  font-size: 11.5px;
+  color: #6ee7b7;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+/* ── Content ─────────────────────────────────────────── */
+.content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #2d5c47;
+  margin-bottom: 1px;
+}
+
+/* ── Upload Zone ─────────────────────────────────────── */
+.upload-zone {
+  border: 1.5px dashed rgba(16, 185, 129, 0.28);
+  border-radius: 14px;
+  padding: 20px 14px;
+  text-align: center;
+  cursor: pointer;
+  background: rgba(16, 185, 129, 0.03);
+  transition: all 0.22s ease;
+}
+
+.upload-zone:hover {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.upload-zone.drag-over {
+  border-color: #34d399;
+  background: rgba(16, 185, 129, 0.13);
+  transform: scale(1.01);
+}
+
+.upload-zone.has-file {
+  border-style: solid;
+  border-color: rgba(16, 185, 129, 0.45);
+  background: rgba(16, 185, 129, 0.06);
+}
+
+.upload-icon-wrap {
+  margin-bottom: 9px;
+}
+
+.upload-main {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #a7f3d0;
+  margin-bottom: 3px;
+}
+
+.upload-sub {
+  font-size: 11px;
+  color: #2d5c47;
+  font-weight: 500;
+}
+
+/* ── File Chip ───────────────────────────────────────── */
+.file-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(16, 185, 129, 0.07);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.file-chip-icon { flex-shrink: 0; }
+
+.file-chip-name {
+  flex: 1;
+  color: #6ee7b7;
+  font-size: 12px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.remove-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+/* ── Parse Status ────────────────────────────────────── */
+.parse-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #6ee7b7;
+}
+
+.parse-spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(16, 185, 129, 0.15);
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Divider ─────────────────────────────────────────── */
+.divider {
+  height: 1px;
+  background: rgba(16, 185, 129, 0.08);
+  margin: 2px 0;
+}
+
+/* ── Buttons ─────────────────────────────────────────── */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  font-family: 'Urbanist', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  letter-spacing: 0.2px;
+}
+
+.btn:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #ecfdf5;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.28);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: linear-gradient(135deg, #047857, #059669);
+  box-shadow: 0 6px 22px rgba(16, 185, 129, 0.42);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: rgba(16, 185, 129, 0.07);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.24);
+}
+
+.btn-outline:not(:disabled):hover {
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(16, 185, 129, 0.48);
+  transform: translateY(-1px);
+}
+
+.btn:active { transform: translateY(0) !important; }
+
+/* ── Match Card ──────────────────────────────────────── */
+.match-card {
+  background: rgba(6, 18, 32, 0.8);
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.match-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.match-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #2d5c47;
+}
+
+.score-badge {
+  font-size: 22px;
+  font-weight: 800;
+  color: #10b981;
+  line-height: 1;
+}
+
+.score-badge.high   { color: #10b981; }
+.score-badge.medium { color: #f59e0b; }
+.score-badge.low    { color: #ef4444; }
+
+.score-track {
+  height: 7px;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.score-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #059669, #34d399);
+  transition: width 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-fill.high   { background: linear-gradient(90deg, #059669, #34d399); }
+.score-fill.medium { background: linear-gradient(90deg, #d97706, #fbbf24); }
+.score-fill.low    { background: linear-gradient(90deg, #dc2626, #f87171); }
+
+.score-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #2d5c47;
+}
+
+.breakdown-item span:last-child {
+  font-weight: 700;
+  color: #6ee7b7;
+}
+
+/* ── Toast ───────────────────────────────────────────── */
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #6ee7b7;
+}
+
+.toast.error {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.22);
+  color: #fca5a5;
+}
+
+.toast-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.toast.error .toast-icon {
+  background: #ef4444;
+}
