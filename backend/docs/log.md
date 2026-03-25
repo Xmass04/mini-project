@@ -256,3 +256,33 @@ Groq/Llama-powered resume-to-job scoring. Each job is scored 0–10 against the 
 **Serial scoring with sleep:** Jobs are scored one at a time with `time.sleep(8)` between calls (not concurrent) to stay under TPM. `session.commit()` after each job so partial progress survives a task retry — idempotent because `job.status = "scored"` is set before commit.
 
 **Batch endpoint:** `POST /jobs/score/batch` queries all `status = "pending"` jobs for a user (optionally filtered by `search_id`) and dispatches a single `score_jobs_task` with the full list, so the caller doesn't need to loop.
+
+---
+
+## Phase 4 Complete — Extension Answer Generation
+
+### What was built
+
+Groq/Llama-powered application question answering for the Chrome Extension. Given a list of questions scraped from a job application form, the backend generates tailored answers using the user's full resume and the job description. Two implementations were built — REST and WebSocket — so both approaches can be compared and tested.
+
+### Files Created / Modified
+
+| File | Status | Purpose |
+|------|--------|---------|
+| `app/services/extension.py` | Created | `ExtensionService.generate_answer(resume_md, job_desc, question)` — calls Groq with full resume (no truncation), returns answer string |
+| `app/api/extension_rest.py` | Created | `POST /extension/answers` — REST version; loops through questions, returns all answers as a JSON list |
+| `app/api/extension_ws.py` | Created | `ws://.../extension/ws/{user_id}/{job_id}` — WebSocket version; pushes each answer as it's ready; includes browser test client at `GET /extension/ws/test` |
+| `app/main.py` | Modified | Registered both extension routers, bumped API version to `4.0.0` |
+| `docs/phase4-websocket-vs-rest.md` | Created | Full explanation of REST vs WebSocket trade-offs, CN theory, and code comparison |
+
+### Key design decisions
+
+**Two implementations:** Both REST and WebSocket are registered simultaneously under the same `/extension` prefix. REST at `POST /extension/answers`, WebSocket at `ws://.../extension/ws/{user_id}/{job_id}`. This allows direct comparison without switching branches.
+
+**No input truncation:** Unlike Phase 3 scoring, answer generation uses the full `resume.markdown_content`. The full resume context is required to generate specific, grounded answers (e.g. referencing actual projects). Truncation would cause the model to miss relevant experience.
+
+**Model:** `LLM_MODEL = llama-3.3-70b-versatile` (100K TPD). Answer generation is user-triggered (one job at a time), not bulk — 100K TPD is sufficient.
+
+**REST vs WebSocket trade-off:** REST returns all answers after all Groq calls finish. WebSocket pushes each answer individually as each call completes. Total latency is identical — the difference is UX perception (progressive fill vs all-at-once). REST is recommended for the Chrome Extension due to simpler `fetch()` integration.
+
+**Browser test client:** `GET /extension/ws/test` serves a plain HTML page with a form to enter questions and see WebSocket messages arrive in real time. Useful for demonstrating the progressive answer flow without needing the Chrome Extension.

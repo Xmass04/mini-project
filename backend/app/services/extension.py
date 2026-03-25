@@ -1,0 +1,36 @@
+from groq import Groq
+
+from app.core.config import settings
+
+_SYSTEM_PROMPT = """\
+You are a job application assistant helping a candidate fill out an application form. \
+You are given the candidate's full resume in Markdown and the job description they are applying to. \
+For each question, write a tailored, concise answer that draws on the candidate's actual experience. \
+Be specific — reference real projects, skills, or achievements from the resume. \
+Do not invent information not present in the resume. \
+Keep answers to 2-4 sentences unless the question clearly requires more detail.\
+"""
+
+
+class ExtensionService:
+    @staticmethod
+    def generate_answer(resume_markdown: str, job_description: str, question: str) -> str:
+        client = Groq(api_key=settings.GROQ_API_KEY)
+
+        user_message = (
+            f"## Resume\n\n{resume_markdown}\n\n"
+            f"## Job Description\n\n{job_description}\n\n"
+            f"## Application Question\n\n{question}"
+        )
+
+        response = client.chat.completions.create(
+            model=settings.LLM_MODEL,
+            messages=[
+                {"role": "system", "content": _SYSTEM_PROMPT},
+                {"role": "user", "content": user_message},
+            ],
+            temperature=0.4,
+            max_tokens=512,
+        )
+
+        return response.choices[0].message.content.strip()
