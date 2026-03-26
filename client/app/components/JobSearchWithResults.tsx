@@ -83,22 +83,92 @@ export default function JobSearchWithResults({ onJobsFound }: Props) {
   const [location, setLocation] = useState("");
   const [phase, setPhase] = useState<SearchPhase>("idle");
   const [resultCount, setResultCount] = useState(0);
+  const [loadingStep, setLoadingStep] = useState({ title: "Searching LinkedIn", subtitle: "Fetching and ranking top matching roles…" });
 
   const canSearch = role.trim().length > 0 && location.trim().length > 0;
   const isLoading = phase === "searching";
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!canSearch || isLoading) return;
+
+    const resumeId = localStorage.getItem("resume_id");
+    if (!resumeId) {
+      alert("Please upload and parse your resume first!");
+      return;
+    }
+
     onJobsFound([]);
     setPhase("searching");
+    setLoadingStep({ title: "Discovering Jobs", subtitle: "Scraping UI for matches..." });
 
-    // Simulate search delay
-    setTimeout(() => {
-      const results = MOCK_JOBS;
-      setResultCount(results.length);
-      onJobsFound(results);
+    try {
+      // 1. Discover Jobs
+      const discoverRes = await fetch("http://localhost:8000/jobs/discover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: 1, title: role, location, limit: 10 }),
+      });
+
+      if (!discoverRes.ok) throw new Error("Discovery request failed");
+
+      const { task_id: discover_task_id, search_id } = await discoverRes.json();
+      console.log("Started discovery task:", discover_task_id, "search_id:", search_id);
+      localStorage.setItem("discover_task_id", discover_task_id);
+      localStorage.setItem("search_id", search_id.toString());
+
+      // Poll Discovery
+      while (true) {
+        console.log(`Polling discover status for task ${discover_task_id}...`);
+        const statusRes = await fetch(`http://localhost:8000/jobs/discover/${discover_task_id}/status`);
+        const statusData = await statusRes.json();
+        console.log(`Discover task state:`, statusData.state);
+
+        if (statusData.state === "SUCCESS") break;
+        if (statusData.state === "FAILURE") throw new Error("Discovery task failed");
+        await new Promise(r => setTimeout(r, 2000));
+      }
+
+      // 2. Score Batch
+      setLoadingStep({ title: "Scoring Fits", subtitle: "AI is evaluating jobs against your resume..." });
+      const scoreRes = await fetch("http://localhost:8000/jobs/score/batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: 1, resume_id: parseInt(resumeId, 10), search_id }),
+      });
+
+      if (!scoreRes.ok) throw new Error("Scoring request failed");
+
+      const { task_id: score_task_id } = await scoreRes.json();
+      console.log("Started scoring task:", score_task_id);
+      localStorage.setItem("scoring_task_id", score_task_id);
+
+      // Poll Scoring
+      while (true) {
+        console.log(`Polling scoring status for task ${score_task_id}...`);
+        const sRes = await fetch(`http://localhost:8000/jobs/score/${score_task_id}/status`);
+        const sData = await sRes.json();
+        console.log(`Scoring task state:`, sData.state);
+
+        if (sData.state === "SUCCESS") break;
+        if (sData.state === "FAILURE") throw new Error("Scoring task failed");
+        await new Promise(r => setTimeout(r, 2500));
+      }
+
+      // 3. List Jobs
+      setLoadingStep({ title: "Loading Results", subtitle: "Fetching your prioritized jobs..." });
+      const listRes = await fetch(`http://localhost:8000/jobs/?user_id=1&search_id=${search_id}`);
+      if (!listRes.ok) throw new Error("Failed to fetch final jobs list");
+
+      const finalJobs = await listRes.json();
+      setResultCount(finalJobs.length);
+      onJobsFound(finalJobs);
       setPhase("done");
-    }, 2200);
+
+    } catch (error) {
+      console.error("Search workflow error:", error);
+      alert("An error occurred during the job search process.");
+      setPhase("idle");
+    }
   };
 
   return (
@@ -267,9 +337,9 @@ export default function JobSearchWithResults({ onJobsFound }: Props) {
               <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <div>
-              <p style={{ color: "#6ee7b7", fontSize: "0.8125rem", fontWeight: 600 }}>Searching LinkedIn</p>
+              <p style={{ color: "#6ee7b7", fontSize: "0.8125rem", fontWeight: 600 }}>{loadingStep.title}</p>
               <p style={{ color: "#2d5c47", fontSize: "0.75rem", fontWeight: 500, marginTop: "2px" }}>
-                Fetching and ranking top matching roles…
+                {loadingStep.subtitle}
               </p>
             </div>
           </div>

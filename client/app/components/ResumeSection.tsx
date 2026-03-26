@@ -33,6 +33,11 @@ export default function ResumeSection() {
 
       const data = await response.json();
       console.log("Upload successful:", data);
+      
+      if (data.resume_id) {
+        localStorage.setItem("resume_id", data.resume_id.toString());
+      }
+      
       setState("done");
     } catch (error) {
       console.error("Upload error:", error);
